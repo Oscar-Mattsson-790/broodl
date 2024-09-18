@@ -13,24 +13,38 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
   const [authenticating, setAuthenticating] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { signup, login } = useAuth();
 
+  const errorMessages = {
+    "auth/user-not-found": "No account with this email exists. Sign up below.",
+    "auth/wrong-password": "Incorrect password. Please try again.",
+    "auth/invalid-email":
+      "Invalid email format. Please check your email and try again.",
+    "auth/invalid-credential":
+      "Invalid email or password. Please check your credentials and try again.",
+    default: "Failed to authenticate. Please check your details and try again.",
+  };
+
   async function handleSubmit() {
+    setErrorMessage("");
     if (!email || !password || password.length < 6) {
+      setErrorMessage(
+        "Please enter a valid email and password of at least 6 characters."
+      );
       return;
     }
 
     setAuthenticating(true);
     try {
       if (isRegister) {
-        console.log("Signing up a new user");
         await signup(email, password);
       } else {
         await login(email, password);
-        console.log("Logging in existing user");
       }
     } catch (err) {
-      console.log(err.message);
+      const message = errorMessages[err.code] || errorMessages.default;
+      setErrorMessage(message);
     } finally {
       setAuthenticating(false);
     }
@@ -42,6 +56,7 @@ export default function Login() {
         {isRegister ? "Register" : "Log In"}
       </h3>
       <p>You&#39;re one step away!</p>
+      {errorMessage && <p className="text-red-600">{errorMessage}</p>}
       <input
         value={email}
         onChange={(e) => setEmail(e.target.value)}

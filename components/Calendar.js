@@ -60,7 +60,6 @@ export default function Calendar(props) {
     }
   }
 
-  console.log("SELECTED MONTH: ", selectedMonth);
   // const year = 2024;
   // const month = "September";
   const monthNow = new Date(
